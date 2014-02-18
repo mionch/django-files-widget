@@ -14,7 +14,7 @@ def filename_from_path(path):
     return re.sub(r'^.+/', '', path)
 
 def model_slug(model):
-    return slugify(model._meta.verbose_name_plural)
+    return slugify(model._meta.model_name)
 
 def construct_temp_path(user):
     now = time.localtime()[0:5]
