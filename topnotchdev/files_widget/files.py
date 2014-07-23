@@ -16,6 +16,9 @@ def filename_from_path(path):
 def model_slug(model):
     return slugify(model._meta.model_name)
 
+def unify_path(path):
+    return path.replace('\\', '/')
+
 def construct_temp_path(user):
     now = time.localtime()[0:5]
     dir_name = TEMP_DIR_FORMAT % now
@@ -36,28 +39,29 @@ def in_permanent_directory(path, instance):
 
 def make_temp_directory(filename, user):
     public_dir = construct_temp_path(user)
-    full_dir = os.path.join(settings.MEDIA_ROOT, public_dir)
-
+    public_path = unify_path(os.path.join(public_dir, filename))
     try:
+        full_dir = os.path.join(settings.MEDIA_ROOT, public_dir)
         if not os.path.exists(full_dir):
             os.makedirs(full_dir)
     except EnvironmentError:
         # deepest dir already exists
         pass
 
-    full_path = os.path.join(full_dir, filename)
+    full_path = os.path.join(settings.MEDIA_ROOT, public_path)
     available_full_path = default_storage.get_available_name(full_path)
     return available_full_path
 
 def make_permanent_directory(temp_path, instance):
     public_dir = construct_permanent_path(instance)
     filename = filename_from_path(temp_path)
-    full_dir = os.path.join(settings.MEDIA_ROOT, public_dir)
+    public_path = unify_path(os.path.join(public_dir, filename))
 
+    full_dir = os.path.join(settings.MEDIA_ROOT, public_dir)
     if not os.path.exists(full_dir):
         os.makedirs(full_dir)
 
-    full_path = os.path.join(full_dir, filename)
+    full_path = os.path.join(settings.MEDIA_ROOT, public_path)
     available_full_path = default_storage.get_available_name(full_path)
     return available_full_path
 
