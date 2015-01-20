@@ -17,6 +17,7 @@ MAX_FILESIZE = getattr(settings, 'FILES_WIDGET_MAX_FILESIZE', 0)
 FILE_TYPES = getattr(settings, 'FILES_WIDGET_FILE_TYPES', None)
 USE_TRASH = getattr(settings, 'FILES_WIDGET_USE_TRASH', False)
 TRASH_DIR = getattr(settings, 'FILES_WIDGET_TRASH_DIR', 'uploads/trash/files_widget/')
+HASH_FILENAMES = getattr(settings, 'FILES_WIDGET_HASH_FILENAMES', True)
 
 if not len(MEDIA_ROOT) or not len(TEMP_DIR) or not len(FILES_DIR) or TEMP_DIR == FILES_DIR:
     raise ImproperlyConfigured("MEDIA_ROOT, FILES_WIDGET_TEMP_DIR and FILES_WIDGET_FILES_DIR must be set and all different")

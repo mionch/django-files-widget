@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os, os.path
 from io import FileIO, BufferedWriter
 import re
@@ -9,6 +10,22 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 
 from conf import *
+
+
+def normalize_polish_chars(text):
+    if type(text) is not unicode:
+        text = unicode(text, 'utf-8')
+    trans_tab = {u'ą': 'a', u'ć': 'c', u'ę': 'e', u'ł': 'l', u'ń': 'n', u'ó': 'o', u'ś': 's', u'ż': 'z', u'ź': 'z',
+                 u'Ą': 'A', u'Ć': 'C', u'Ę': 'E', u'Ł': 'L', u'Ń': 'N', u'Ó': 'O', u'Ś': 'S', u'Ż': 'Z', u'Ź': 'Z'}
+    return ''.join(trans_tab.get(char, char) for char in text)
+
+def safe_ascii(text):
+    text = normalize_polish_chars(text)
+    text_safe = ""
+    for char in text:
+        if not ord(char) < 48 or ord(char) > 127:
+            text_safe += char
+    return slugify(text_safe)
 
 def filename_from_path(path):
     return re.sub(r'^.+/', '', path)
@@ -78,7 +95,11 @@ def save_upload(uploaded, filename, raw_data, user):
     import random
 
     file_ext = os.path.splitext(filename)[1]
-    filename = md5(str(time())+str(random.random()*1000)).hexdigest() + file_ext
+    file_name = os.path.splitext(filename)[0]
+    if HASH_FILENAMES:
+        filename = md5(str(time())+str(random.random()*1000)).hexdigest() + file_ext
+    else:
+        filename = safe_ascii(file_name) + file_ext
     
     path = make_temp_directory(filename, user)
     public_path = path.replace(settings.MEDIA_ROOT, "", 1)
