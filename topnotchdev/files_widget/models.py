@@ -5,9 +5,9 @@ from django.contrib.auth.models import Group, Permission
 from fields import ImageField
 
 class GlobalPermissionManager(models.Manager):
-    def get_queryset(self):
+    def get_query_set(self):
         return super(GlobalPermissionManager, self).\
-            get_queryset().filter(content_type__name='global_permission')
+            get_query_set().filter(content_type__name='global_permission')
 
 
 class GlobalPermission(Permission):
